@@ -14,8 +14,8 @@ require (
 	github.com/openconfig/ygot v0.29.20
 	go.uber.org/atomic v1.10.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576
-	google.golang.org/grpc v1.68.1
-	google.golang.org/protobuf v1.35.2
+	google.golang.org/grpc v1.69.4
+	google.golang.org/protobuf v1.36.3
 	lukechampine.com/uint128 v1.3.0
 )
 
@@ -68,3 +68,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.120.1 // indirect
 )
+
+replace github.com/openconfig/gribi => github.com/tengyiG/gribi v1.8.2-0.20250129001407-564a6a458b17
