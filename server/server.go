@@ -300,6 +300,7 @@ func New(opt ...ServerOpt) (*Server, error) {
 // Modify implements the gRIBI Modify RPC.
 func (s *Server) Modify(ms spb.GRIBI_ModifyServer) error {
 	// Initiate the per client state for this client.
+	log.Warning("getting into Modify()")
 	cid := uuid.New().String()
 	log.V(2).Infof("creating client with ID %s", cid)
 	if err := s.newClient(cid); err != nil {
