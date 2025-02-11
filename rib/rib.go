@@ -1217,6 +1217,7 @@ func candidateRIB(a *aftpb.Afts) (*aft.RIB, error) {
 
 	nr := &aft.RIB{}
 	for p, v := range paths {
+		log.Warningf("path %v, value %v", p, v)
 		sv, err := value.FromScalar(v)
 		log.Warningf("sv: %v", sv)
 
