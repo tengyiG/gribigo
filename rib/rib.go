@@ -1220,9 +1220,11 @@ func candidateRIB(a *aftpb.Afts) (*aft.RIB, error) {
 		log.Warningf("path %v, value %v", p, v)
 		sv, err := value.FromScalar(v)
 		log.Warningf("sv: %v", sv)
+		log.Warningf("err: %v", err)
 
 		if err != nil {
 			ps := p.String()
+			log.Warningf("path string: %s", ps)
 			if yps, err := ygot.PathToString(p); err == nil {
 				ps = yps
 			}
