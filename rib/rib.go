@@ -448,6 +448,7 @@ func (o *OpResult) String() string {
 // call the internal implementation in order to install all entries that are now resolvable based
 // on the operation provided.
 func (r *RIB) AddEntry(ni string, op *spb.AFTOperation) ([]*OpResult, []*OpResult, error) {
+	log.Warning("getting into AddEntry")
 	if ni == "" {
 		return nil, nil, fmt.Errorf("invalid network instance, %s", ni)
 	}
@@ -468,6 +469,7 @@ func (r *RIB) AddEntry(ni string, op *spb.AFTOperation) ([]*OpResult, []*OpResul
 //   - a map, keyed by operation ID, describing the stack of calls that we have currently
 //     done during this recursion so that we do not repeat an install operation.
 func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*OpResult, installStack map[uint64]bool) error {
+	log.Warning("getting into addEntryInternal")
 	if installStack[op.GetId()] {
 		return nil
 	}
@@ -480,7 +482,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 	if op.GetOp() == spb.AFTOperation_REPLACE {
 		explicitReplace = true
 	}
-
+	log.Warningf("operation %v", op.GetOp())
 	var (
 		installed bool
 		opErr     error
@@ -492,6 +494,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 
 	switch t := op.Entry.(type) {
 	case *spb.AFTOperation_Ipv4:
+		log.Warning("ipv4 type")
 		log.V(2).Infof("[op %d] attempting to add IPv4 prefix %s", op.GetId(), t.Ipv4.GetPrefix())
 		done, orig, err := niR.AddIPv4(t.Ipv4, explicitReplace)
 		switch {
@@ -503,6 +506,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 			handleReferences(r, niR, orig, t.Ipv4.GetIpv4Entry())
 		}
 	case *spb.AFTOperation_Ipv6:
+		log.Warning("ipv6 type")
 		v6Prefix = t.Ipv6.GetPrefix()
 		log.V(2).Infof("[op %d] attempting to add IPv6 prefix %s", op.GetId(), t.Ipv6.GetPrefix())
 		done, orig, err := niR.AddIPv6(t.Ipv6, explicitReplace)
@@ -514,6 +518,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 			handleReferences(r, niR, orig, t.Ipv6.GetIpv6Entry())
 		}
 	case *spb.AFTOperation_Mpls:
+		log.Warning("mpls")
 		mplsLabel = t.Mpls.GetLabelUint64()
 		log.V(2).Infof("[op %d] attempting to add MPLS label entry %d", op.GetId(), mplsLabel)
 		done, orig, err := niR.AddMPLS(t.Mpls, explicitReplace)
@@ -525,6 +530,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 			handleReferences(r, niR, orig, t.Mpls.GetLabelEntry())
 		}
 	case *spb.AFTOperation_NextHopGroup:
+		log.Warning("nexthopgroup")
 		log.V(2).Infof("[op %d] attempting to add NHG ID %d", op.GetId(), t.NextHopGroup.GetId())
 		done, orig, err := niR.AddNextHopGroup(t.NextHopGroup, explicitReplace)
 		switch {
@@ -535,6 +541,7 @@ func (r *RIB) addEntryInternal(ni string, op *spb.AFTOperation, oks, fails *[]*O
 			installed = done
 		}
 	case *spb.AFTOperation_NextHop:
+		log.Warning("nexthop")
 		log.V(2).Infof("[op %d] attempting to add NH Index %d", op.GetId(), t.NextHop.GetIndex())
 		done, _, err := niR.AddNextHop(t.NextHop, explicitReplace)
 		switch {
@@ -1201,14 +1208,17 @@ func (r *RIBHolder) GetNextHopGroup(id uint64) (*aft.Afts_NextHopGroup, bool) {
 // candidateRIB takes the input set of Afts and returns them as a aft.RIB pointer
 // that can be merged into an existing RIB.
 func candidateRIB(a *aftpb.Afts) (*aft.RIB, error) {
+	log.Warning("gettiing into candidate RIB")
 	paths, err := protomap.PathsFromProto(a)
 	if err != nil {
 		return nil, err
 	}
+	log.Warningf("paths: %v", paths)
 
 	nr := &aft.RIB{}
 	for p, v := range paths {
 		sv, err := value.FromScalar(v)
+		log.Warningf("sv: %v", sv)
 
 		if err != nil {
 			ps := p.String()
@@ -2009,6 +2019,7 @@ func (r *RIBHolder) nhgReferenced(i uint64) bool {
 // indicates whether this was an implicit replace. If encountered, it returns an error
 // if the group is invalid.
 func (r *RIBHolder) AddNextHop(e *aftpb.Afts_NextHopKey, explicitReplace bool) (bool, *aft.Afts_NextHop, error) {
+	log.Warning("getting into AddNextHop")
 	if r.r == nil {
 		return false, nil, errors.New("invalid RIB structure, nil")
 	}

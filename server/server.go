@@ -770,6 +770,7 @@ func (s *Server) getElection() *electionDetails {
 // messages for the client with the specified cid. It writes the result to the supplied
 // ModifyResponse channel when successful, or writes the error to the supplied errCh.
 func (s *Server) doModify(cid string, ops []*spb.AFTOperation, resCh chan *spb.ModifyResponse, errCh chan error) {
+	log.Warning("getting into doModify")
 	cs, ok := s.getClientState(cid)
 	switch {
 	case !ok:
@@ -857,6 +858,7 @@ type electionDetails struct {
 // current election on the server is described in election.
 // The results are returned as a ModifyResponse and an error which must be a status.Status.
 func modifyEntry(r *rib.RIB, ni string, op *spb.AFTOperation, fibACK bool, election *electionDetails) (*spb.ModifyResponse, error) {
+	log.Warning("getting into modifyEntry")
 	if op == nil {
 		return nil, status.Newf(codes.Internal, "invalid nil operation received").Err()
 	}
