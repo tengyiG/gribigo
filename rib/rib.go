@@ -1224,7 +1224,6 @@ func candidateRIB(a *aftpb.Afts) (*aft.RIB, error) {
 
 		if err != nil {
 			ps := p.String()
-			log.Warningf("path string: %s", ps)
 			if yps, err := ygot.PathToString(p); err == nil {
 				ps = yps
 			}
